@@ -434,7 +434,7 @@ def prepareS1AM(in_scene, chunks=24, ext_dem=True, s3_bucket='public-eo-data', s
             ext_dem_path_W = "common_sensing/ancillary_products/SRTM1Sec/SRTM30_Fiji_W.tif"
             ext_dem_E = f'{inter_dir}SRTM30_Fiji_E.tif'
             ext_dem_W = f'{inter_dir}SRTM30_Fiji_W.tif'
-            if not os.path.exists(ext_dem_path_E):
+            if not os.path.exists(ext_dem_E):
                 s3_download(s3_bucket, ext_dem_path_E, ext_dem_E)
                 s3_download(s3_bucket, ext_dem_path_W, ext_dem_W)
             root.info(f"{in_scene} {scene_name} DOWNLOADED E+W DEMs")
