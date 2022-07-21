@@ -76,7 +76,7 @@ def band_name_l8(prod_path):
 
     prod_name = os.path.basename(prod_path)
     parts = prod_name.split('_')
-    prod_name = f"{parts[-2]}_{parts[-1][:-4]}"
+    prod_name = f"{parts[-2]}_{parts[-1][:-4]}".lower()
 
     logging.debug("Product name is: {}".format(prod_name))
 
@@ -92,7 +92,20 @@ def band_name_l8(prod_path):
         "sr_band4": 'red',
         "sr_band5": 'nir',
         "sr_band6": 'swir1',
-        "sr_band7": 'swir2'
+        "sr_band7": 'swir2',
+        "t1_b1": 'coastal_aerosol',
+        "t1_b2": 'blue',
+        "t1_b3": 'green',
+        "t1_b4": 'red',
+        "t1_b5": 'nir',
+        "t1_b6": 'swir1',
+        "t1_b7": 'swir2',
+        "t1_b8": 'panchromatic',
+        "t1_b9": 'cirrus',
+        "t1_b10": 'brightness_temperature_1',
+        "t1_b11": 'brightness_temperature_2',
+        "qa_radsat": 'radsat_qa',
+        "qa_pixel": 'pixel_qa',
     }
 
     layer_name = prod_map[prod_name]
