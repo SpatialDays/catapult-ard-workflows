@@ -108,7 +108,10 @@ def band_name_l8(prod_path):
         "qa_pixel": 'pixel_qa',
     }
 
-    layer_name = prod_map[prod_name]
+    if prod_name in prod_map:
+        layer_name = prod_map[prod_name]
+    else:
+        layer_name = "unknown"
 
     return layer_name
 
@@ -250,12 +253,14 @@ def yaml_prep_landsat(scene_dir):
     # pulled from .xml file (or scene dir) not done yet for sake of progression
     t0 = parse(find_l8_datetime(scene_dir))
 
-    # get polorisation from each image product (S2 band)
-    images = {
-        band_name_landsat(prod_path): {
-            'path': str(split_all(prod_path)[-1])
-        } for prod_path in prod_paths
-    }
+    images = {}
+    for prod_path in prod_paths:
+        name = band_name_landsat(prod_path)
+        if name is not "unknown":
+            images[name] = {
+                'path': str(split_all(prod_path)[-1])
+            }
+
     logging.info(images)
 
     # trusting bands coaligned, use one to generate spatial bounds for all
