@@ -1,4 +1,4 @@
-import tarfile
+
 import uuid
 import requests
 import glob
@@ -18,8 +18,7 @@ def download_extract_ls_url(ls_url, down_tar, untar_dir):
             get_file(ls_url, down_tar)
 
         logging.info(f"Extracting tar.gz: {down_tar}")
-        with tarfile.open(down_tar, "r:gz") as tar:
-            tar.extractall(path=untar_dir)
+        subprocess.call(["tar", "xzf", down_tar, "-C", untar_dir])
 
     else:
         logging.info(f"Scene already downloaded and extracted: {untar_dir}")
