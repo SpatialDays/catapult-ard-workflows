@@ -81,7 +81,7 @@ def band_name_l8(prod_path):
             or prod_name[:3] == "t2_" \
             or prod_name[:3] == "sr_" \
             or prod_name[:3] == "bt_":
-        prod_name = prod_name[4:]
+        prod_name = prod_name[3:]
 
     logging.debug("Product name is: {}".format(prod_name))
 
