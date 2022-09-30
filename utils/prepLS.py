@@ -77,32 +77,40 @@ def band_name_l8(prod_path):
     parts = prod_name.split('_')
     prod_name = f"{parts[-2]}_{parts[-1][:-4]}".lower()
 
+    if prod_name[:3] == "t1_" \
+            or prod_name[:3] == "t2_" \
+            or prod_name[:3] == "sr_" \
+            or prod_name[:3] == "bt_":
+        prod_name = prod_name[4:]
+
     logging.debug("Product name is: {}".format(prod_name))
 
     prod_map = {
-        "bt_band10": 'brightness_temperature_1',
-        "bt_band11": 'brightness_temperature_2',
         "pixel_qa": 'pixel_qa',
         "radsat_qa": 'radsat_qa',
-        "sr_aerosol": 'sr_aerosol',
-        "sr_band1": 'coastal_aerosol',
-        "sr_band2": 'blue',
-        "sr_band3": 'green',
-        "sr_band4": 'red',
-        "sr_band5": 'nir',
-        "sr_band6": 'swir1',
-        "sr_band7": 'swir2',
-        "t1_b1": 'coastal_aerosol',
-        "t1_b2": 'blue',
-        "t1_b3": 'green',
-        "t1_b4": 'red',
-        "t1_b5": 'nir',
-        "t1_b6": 'swir1',
-        "t1_b7": 'swir2',
-        "t1_b8": 'panchromatic',
-        "t1_b9": 'cirrus',
-        "t1_b10": 'brightness_temperature_1',
-        "t1_b11": 'brightness_temperature_2',
+        "aerosol": 'sr_aerosol',
+        "band1": 'coastal_aerosol',
+        "band2": 'blue',
+        "band3": 'green',
+        "band4": 'red',
+        "band5": 'nir',
+        "band6": 'swir1',
+        "band7": 'swir2',
+        "band8": 'panchromatic',
+        "band9": 'cirrus',
+        "band10": 'brightness_temperature_1',
+        "band11": 'brightness_temperature_2',
+        "b1": 'coastal_aerosol',
+        "b2": 'blue',
+        "b3": 'green',
+        "b4": 'red',
+        "b5": 'nir',
+        "b6": 'swir1',
+        "b7": 'swir2',
+        "b8": 'panchromatic',
+        "b9": 'cirrus',
+        "b10": 'brightness_temperature_1',
+        "b11": 'brightness_temperature_2',
         "qa_radsat": 'radsat_qa',
         "qa_pixel": 'pixel_qa',
     }
