@@ -335,7 +335,13 @@ def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/def
 
     ls_url = in_scene
     down_basename = split_all(ls_url)[-1]
-    scene_name = f"{down_basename[:4]}_L1TP_{down_basename[4:10]}_{down_basename[10:18]}"
+    # scene_name = f"{down_basename[:4]}_L1TP_{down_basename[4:10]}_{down_basename[10:18]}" # THIS IS MAKING WRONG SCENE NAME!!!
+    sensor_id = down_basename[:4]
+    # example down_basename: LC080690112020090902T2-SC20221124163530.tar.gz
+    # split the down_basename between - and .tar.gz
+    unique_id = down_basename.split('-')[-1].split('.')[0]
+    scene_name = f"{sensor_id}_L1TP_{unique_id}"
+
     inter_dir = f"{inter_dir}{scene_name}_tmp/"
     os.makedirs(inter_dir, exist_ok=True)
     down_tar = f"{inter_dir}{down_basename}"
