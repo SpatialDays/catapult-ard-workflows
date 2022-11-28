@@ -6,6 +6,8 @@ from random import randint
 from time import sleep
 from urllib.request import urlopen, HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, HTTPDigestAuthHandler, build_opener
 from urllib.error import HTTPError
+import requests
+import shutil
 
 import botocore
 from asynchronousfilereader import AsynchronousFileReader
@@ -146,6 +148,24 @@ def run_snap_command(command, timeout =  60*45):
         return
     if process.returncode != 0:
         raise Exception("Snap returned non zero exit status")
+
+
+
+def get_file_via_stream(url, output_file_path):
+    # create empty file with output_file_path
+    directory_path_from_output_file_path = os.path.dirname(output_file_path)
+    if not os.path.exists(directory_path_from_output_file_path):
+        logging.info("creating directory: " + directory_path_from_output_file_path)
+        os.makedirs(directory_path_from_output_file_path)
+    
+    with open(output_file_path, 'wb') as f:
+        logging.info(f"Creating file {output_file_path}")
+        f.write(b'')
+    
+    with requests.get(url, stream=True) as r:
+        logging.debug(f"downloading {url} to {output_file_path} using stream")
+        with open(output_file_path, 'wb') as f:
+           shutil.copyfileobj(r.raw, f)
 
 
 def get_file(url, output_path, user=None, password=None):

@@ -5,9 +5,35 @@ import glob
 import os
 import logging
 from dateutil.parser import parse
-
+import tarfile
 from utils.prep_utils import *
+from typing import List
 
+
+
+def download_scene(landat_download_url:str, target_folder:str = "/tmp/data/download") -> List[str]:
+    # download the tar.gz file from the landsat download url into the target folder and
+    # return filenames from the tar.gz file
+    logging.info(f"Downloading scene from {landat_download_url}")
+    logging.info(f"Target folder is {target_folder}")
+    tar_path = os.path.join(target_folder, os.path.basename(landat_download_url))
+    get_file_via_stream(landat_download_url, tar_path)
+    logging.info(f"Downloaded scene from {landat_download_url}")
+    logging.info(f"Target folder is {target_folder}")
+    logging.info(f"Tar file is {tar_path}")
+    tar = tarfile.open(tar_path)
+    files_in_tar = tar.getnames()
+    logging.info(f"Files in tar are {files_in_tar}")
+    return tar_path, files_in_tar
+
+def extract_scene(scene_path, target_folder):
+    # extract the tar.gz file into the target folder
+    logging.info(f"Extracting scene from {scene_path} to {target_folder}")
+    tar = tarfile.open(scene_path)
+    tar.extractall(target_folder)
+    logging.info(f"Extracted scene from {scene_path} to {target_folder}")
+    return target_folder
+    
 
 def download_extract_ls_url(ls_url, down_tar, untar_dir):
 
@@ -334,11 +360,17 @@ def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/def
     root = setup_logging()
 
     ls_url = in_scene
-    down_basename = split_all(ls_url)[-1]
-    scene_name = f"{down_basename[:4]}_L1TP_{down_basename[4:10]}_{down_basename[10:18]}"
+    downloaded_file_path, filenames = download_scene(ls_url, inter_dir + 'download/')
+    logging.info(f"Downloaded {filenames}")
+    filenames = [f for f in filenames if f.endswith(('.tif', '.tiff', '.TIF', '.TIFF'))]
+    logging.info(f"Filtered {filenames}")
+    
+    first_file = filenames[0]
+    tokens = first_file.split('_')
+    scene_name = '_'.join(tokens[:4])
+
     inter_dir = f"{inter_dir}{scene_name}_tmp/"
     os.makedirs(inter_dir, exist_ok=True)
-    down_tar = f"{inter_dir}{down_basename}"
     untar_dir = f"{inter_dir}{scene_name}_untar/"
     os.makedirs(untar_dir, exist_ok=True)
     cog_dir = f"{inter_dir}{scene_name}/"
@@ -351,7 +383,7 @@ def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/def
 
         try:
             root.info(f"{scene_name} DOWNLOADING via ESPA")
-            download_extract_ls_url(ls_url, down_tar, untar_dir)
+            extract_scene(downloaded_file_path, untar_dir)
             root.info(f"{scene_name} DOWNLOADed + EXTRACTED")
         except Exception as e:
             root.exception(f"{scene_name} CANNOT BE FOUND")
@@ -397,5 +429,4 @@ def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/def
 
 
 if __name__ == '__main__':
-    # prepareLS("https://edclpdsftp.cr.usgs.gov/orders/espa-Sarah.Cheesbrough@sa.catapult.org.uk-11292019-051915-532/LE070740712012032201T1-SC20191129113302.tar.gz")
     prepareLS("https://edclpdsftp.cr.usgs.gov/orders/espa-Sarah.Cheesbrough@sa.catapult.org.uk-12022019-042034-386/LT040750721993010401T1-SC20191202114123.tar.gz")
