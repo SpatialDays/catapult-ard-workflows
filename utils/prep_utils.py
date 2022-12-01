@@ -151,7 +151,7 @@ def run_snap_command(command, timeout =  60*45):
 
 
 
-def get_file_via_stream(url, output_file_path):
+def get_file_via_stream(url:str, output_file_path:str) -> None:
     # create empty file with output_file_path
     directory_path_from_output_file_path = os.path.dirname(output_file_path)
     if not os.path.exists(directory_path_from_output_file_path):

@@ -11,14 +11,14 @@ from typing import List
 
 
 
-def download_scene(landat_download_url:str, target_folder:str = "/tmp/data/download") -> List[str]:
+def download_scene(landsat_download_url:str, target_folder:str = "/tmp/data/download") -> (str,List[str]):
     # download the tar.gz file from the landsat download url into the target folder and
     # return filenames from the tar.gz file
-    logging.info(f"Downloading scene from {landat_download_url}")
+    logging.info(f"Downloading scene from {landsat_download_url}")
     logging.info(f"Target folder is {target_folder}")
-    tar_path = os.path.join(target_folder, os.path.basename(landat_download_url))
-    get_file_via_stream(landat_download_url, tar_path)
-    logging.info(f"Downloaded scene from {landat_download_url}")
+    tar_path = os.path.join(target_folder, os.path.basename(landsat_download_url))
+    get_file_via_stream(landsat_download_url, tar_path)
+    logging.info(f"Downloaded scene from {landsat_download_url}")
     logging.info(f"Target folder is {target_folder}")
     logging.info(f"Tar file is {tar_path}")
     tar = tarfile.open(tar_path)
@@ -35,19 +35,19 @@ def extract_scene(scene_path, target_folder):
     return target_folder
     
 
-def download_extract_ls_url(ls_url, down_tar, untar_dir):
-
-    if not os.listdir(untar_dir):
-
-        if not os.path.exists(down_tar):
-            logging.info(f"Downloading tar.gz: {down_tar} from {ls_url}")
-            get_file(ls_url, down_tar)
-
-        logging.info(f"Extracting tar.gz: {down_tar}")
-        subprocess.call(["tar", "xzf", down_tar, "-C", untar_dir])
-
-    else:
-        logging.info(f"Scene already downloaded and extracted: {untar_dir}")
+# def download_extract_ls_url(ls_url, down_tar, untar_dir):
+#
+#     if not os.listdir(untar_dir):
+#
+#         if not os.path.exists(down_tar):
+#             logging.info(f"Downloading tar.gz: {down_tar} from {ls_url}")
+#             get_file(ls_url, down_tar)
+#
+#         logging.info(f"Extracting tar.gz: {down_tar}")
+#         subprocess.call(["tar", "xzf", down_tar, "-C", untar_dir])
+#
+#     else:
+#         logging.info(f"Scene already downloaded and extracted: {untar_dir}")
 
 
 def band_name_landsat(prod_path):
