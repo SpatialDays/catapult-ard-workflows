@@ -122,24 +122,24 @@ measurements:
           values:
             0: no_occlusion
             1: occlusion
-    - name: 'sr_aerosol'
-      aliases: [sr_aerosol_qa, aerosol_qa, aerosol]
-      dtype: uint8
-      nodata: 0
-      units: 'bit_index'
-      flags_definition:
-        aerosol_qa:
-          bits: [0,1,2,3,4,5,6,7]
-          description: Aerosol QA
-          values:
-            1: Data Fill Flag
-            2: Aerosol Retrieval - Valid
-            4: Aerosol Retrieval - Interpolated
-            8: Water Pixel
-            16: Water Aerosol Retrieval Failed
-            32: Neighbor of Failed Aerosol Retrieval
-            64: Aerosol Content Content Low Bit
-            128: Aerosol Content Content High Bit
+    # - name: 'sr_aerosol'
+    #   aliases: [sr_aerosol_qa, aerosol_qa, aerosol]
+    #   dtype: uint8
+    #   nodata: 0
+    #   units: 'bit_index'
+    #   flags_definition:
+    #     aerosol_qa:
+    #       bits: [0,1,2,3,4,5,6,7]
+    #       description: Aerosol QA
+    #       values:
+    #         1: Data Fill Flag
+    #         2: Aerosol Retrieval - Valid
+    #         4: Aerosol Retrieval - Interpolated
+    #         8: Water Pixel
+    #         16: Water Aerosol Retrieval Failed
+    #         32: Neighbor of Failed Aerosol Retrieval
+    #         64: Aerosol Content Content Low Bit
+    #         128: Aerosol Content Content High Bit
     - name: 'radsat_qa'
       aliases: [radsat_qa]
       dtype: uint16
