@@ -114,7 +114,7 @@ def band_name_l8(prod_path):
     prod_map = {
         "pixel_qa": 'pixel_qa',
         "radsat_qa": 'radsat_qa',
-        "aerosol": 'sr_aerosol',
+       # "aerosol": 'sr_aerosol',
         "band1": 'coastal_aerosol',
         "band2": 'blue',
         "band3": 'green',
