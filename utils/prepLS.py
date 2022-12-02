@@ -11,7 +11,7 @@ from typing import List
 
 
 
-def download_scene(landsat_download_url:str, target_folder:str = "/tmp/data/download") -> (str,List[str]):
+def download_scene(landsat_download_url:str, target_folder:str = "/tmp/data/download"):
     # download the tar.gz file from the landsat download url into the target folder and
     # return filenames from the tar.gz file
     logging.info(f"Downloading scene from {landsat_download_url}")
@@ -356,7 +356,7 @@ def yaml_prep_landsat(scene_dir):
 
 
 def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/default',
-              inter_dir='/tmp/data/intermediate/', prodlevel='L2A'):
+              inter_dir='/tmp/data/intermediate/', prodlevel='L2A', item = ""):
     root = setup_logging()
 
     ls_url = in_scene
