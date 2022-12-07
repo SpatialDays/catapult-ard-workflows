@@ -76,13 +76,10 @@ def conv_sgl_cog(in_path, out_path, nodata=0):
 
 
 def clean_up(work_dir: str) -> None:
-    # Check if the directory exists
+    # remove all contents in the work_dir
     if os.path.exists(work_dir):
-        # Delete all files in the given directory
-        for filename in os.listdir(work_dir):
-            filepath = os.path.join(work_dir, filename)
-            if os.path.isfile(filepath):
-                os.remove(filepath)
+        shutil.rmtree(work_dir)
+        
 
         # Delete all subdirectories in the given directory
         for subdirname in os.listdir(work_dir):
@@ -90,8 +87,23 @@ def clean_up(work_dir: str) -> None:
             if os.path.isdir(subdirpath):
                 clean_up(subdirpath)  # Recursively clean up the subdirectory
 
-        # Delete the given directory
-        os.rmdir(work_dir)
+    # # Check if the directory exists
+    # if os.path.exists(work_dir):
+    #     # Delete all files in the given directory
+    #     for filename in os.listdir(work_dir):
+    #         filepath = os.path.join(work_dir, filename)
+    #         if os.path.isfile(filepath):
+    #             os.remove(filepath)
+
+    #     # Delete all subdirectories in the given directory
+    #     for subdirname in os.listdir(work_dir):
+    #         subdirpath = os.path.join(work_dir, subdirname)
+    #         if os.path.isdir(subdirpath):
+    #             clean_up(subdirpath)  # Recursively clean up the subdirectory
+    #             os.rmdir(subdirpath)  # Delete the empty subdirectory
+
+    #     # Delete the given directory
+    #     os.rmdir(work_dir)
 
 
 def setup_logging():
