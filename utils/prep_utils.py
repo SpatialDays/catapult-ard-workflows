@@ -89,7 +89,6 @@ def clean_up(work_dir: str) -> None:
             subdirpath = os.path.join(work_dir, subdirname)
             if os.path.isdir(subdirpath):
                 clean_up(subdirpath)  # Recursively clean up the subdirectory
-                os.rmdir(subdirpath)  # Delete the empty subdirectory
 
         # Delete the given directory
         os.rmdir(work_dir)
