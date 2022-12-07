@@ -36,7 +36,7 @@ from . dc_import_export import export_xarray_to_geotiff
 
 
 def stream_yml(s3_bucket, s3_path):
-    return yaml.safe_load(requests.get(f"{os.getenv('AWS_S3_ENDPOINT_URL')}/{s3_bucket}/{s3_path}").text)
+    return yaml.safe_load(requests.get(f"{os.getenv('AWS_ENDPOINT_URL')}/{s3_bucket}/{s3_path}").text)
 
 def get_ref_channel(prod):
     if ('LANDSAT' in prod) | ('SENTINEL_2' in prod): return 'swir1'
@@ -53,7 +53,7 @@ def get_remote_band_paths(s3_bucket, yml_paths, band_nms):
         yml = stream_yml(s3_bucket, yml_path)
         for band_nm in band_nms:
             try:
-                paths.append(f"{os.getenv('AWS_S3_ENDPOINT_URL')}/{s3_bucket}/{'/'.join(yml_path.split('/')[:-1])}/{yml['image']['bands'][band_nm]['path']}")
+                paths.append(f"{os.getenv('AWS_ENDPOINT_URL')}/{s3_bucket}/{'/'.join(yml_path.split('/')[:-1])}/{yml['image']['bands'][band_nm]['path']}")
                 bands.append(band_nm)
             except:
                 pass
