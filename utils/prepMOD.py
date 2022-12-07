@@ -160,7 +160,7 @@ def yaml_prep_MCD43A4(scene_dir):
 
 
 def prepareMOD(in_scene, 
-               s3_bucket='public-eo-data', 
+               s3_bucket='', 
                s3_dir='common_sensing/fiji/default',
                inter_dir='/tmp/data/intermediate/'):
     

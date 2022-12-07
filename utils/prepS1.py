@@ -377,7 +377,7 @@ def available_bands(source):
 def prepareS1(
         in_scene,
         ext_dem=None,
-        s3_bucket='public-eo-data',
+        s3_bucket='',
         s3_dir='common_sensing/sentinel_1/',
         inter_dir='/tmp/data/intermediate/',
         source='asf'

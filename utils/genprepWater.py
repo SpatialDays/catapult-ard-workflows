@@ -156,7 +156,7 @@ def resamp_bands(xr, xrs):
         return xr.interp(x=xrs[0]['x'], y=xrs[0]['y'])
     
     
-def per_scene_wofs(optical_yaml_path, s3_source=True, s3_bucket='public-eo-data', s3_dir='common_sensing/fiji/wofsdefault/', inter_dir='../tmp/data/intermediate/', aoi_mask=False):
+def per_scene_wofs(optical_yaml_path, s3_source=True, s3_bucket='', s3_dir='common_sensing/fiji/wofsdefault/', inter_dir='../tmp/data/intermediate/', aoi_mask=False):
     """
     Generate and prepare wofs (and wofs-like) products for .
     Assumes all data can be found and downoaded using relative locations within yaml & dir name contains unique scene_name.

@@ -10,13 +10,13 @@ from utils.prep_utils import *
 from typing import List
 
 
-
-def download_scene(landsat_download_url:str, target_folder:str = "/tmp/data/download"):
+def download_scene(landsat_download_url: str, target_folder: str = "/tmp/data/download"):
     # download the tar.gz file from the landsat download url into the target folder and
     # return filenames from the tar.gz file
     logging.info(f"Downloading scene from {landsat_download_url}")
     logging.info(f"Target folder is {target_folder}")
-    tar_path = os.path.join(target_folder, os.path.basename(landsat_download_url))
+    tar_path = os.path.join(
+        target_folder, os.path.basename(landsat_download_url))
     get_file_via_stream(landsat_download_url, tar_path)
     logging.info(f"Downloaded scene from {landsat_download_url}")
     logging.info(f"Target folder is {target_folder}")
@@ -26,6 +26,7 @@ def download_scene(landsat_download_url:str, target_folder:str = "/tmp/data/down
     logging.info(f"Files in tar are {files_in_tar}")
     return tar_path, files_in_tar
 
+
 def extract_scene(scene_path, target_folder):
     # extract the tar.gz file into the target folder
     logging.info(f"Extracting scene from {scene_path} to {target_folder}")
@@ -33,7 +34,7 @@ def extract_scene(scene_path, target_folder):
     tar.extractall(target_folder)
     logging.info(f"Extracted scene from {scene_path} to {target_folder}")
     return target_folder
-    
+
 
 # def download_extract_ls_url(ls_url, down_tar, untar_dir):
 #
@@ -114,7 +115,7 @@ def band_name_l8(prod_path):
     prod_map = {
         "pixel_qa": 'pixel_qa',
         "radsat_qa": 'radsat_qa',
-       # "aerosol": 'sr_aerosol',
+        # "aerosol": 'sr_aerosol',
         "band1": 'coastal_aerosol',
         "band2": 'blue',
         "band3": 'green',
@@ -152,7 +153,7 @@ def band_name_l8(prod_path):
 def conv_lsscene_cogs(untar_dir, cog_dir, overwrite=False):
     """
     Convert products to cogs [+ validate TBC].
-    
+
     :param untar_dir: Downloaded S2 product directory (i.e. via ESA or GCloud; assumes .SAFE structure)
     :param cog_dir: directory in which to create the output COGs
     :param overwrite: Binary for whether to overwrite or skip existing COG files)
@@ -160,7 +161,8 @@ def conv_lsscene_cogs(untar_dir, cog_dir, overwrite=False):
     """
 
     if not os.path.exists(untar_dir):
-        logging.warning('Cannot find original scene directory: {}'.format(untar_dir))
+        logging.warning(
+            'Cannot find original scene directory: {}'.format(untar_dir))
 
     # create cog scene directory
     if not os.path.exists(cog_dir):
@@ -191,7 +193,7 @@ def conv_sgl_cog(in_path, out_path):
     """
     Convert a single input file to COG format. Default settings via cogeo repository (funcs within prep_utils). 
     COG val TBC
-    
+
     :param in_path: path to non-cog file
     :param out_path: path to new cog file
     :return: 
@@ -246,12 +248,15 @@ def copy_l8_metadata(untar_dir, cog_dir):
             if os.path.exists(meta):
                 # check cp doesn't exist
                 if not os.path.exists(n_meta):
-                    logging.info("Copying original metadata file to cog dir: {}".format(n_meta))
+                    logging.info(
+                        "Copying original metadata file to cog dir: {}".format(n_meta))
                     shutil.copyfile(meta, n_meta)
                 else:
-                    logging.info("Original metadata file already copied to cog_dir: {}".format(n_meta))
+                    logging.info(
+                        "Original metadata file already copied to cog_dir: {}".format(n_meta))
             else:
-                logging.warning("Cannot find orignial metadata file: {}".format(meta))
+                logging.warning(
+                    "Cannot find orignial metadata file: {}".format(meta))
     else:
         logging.warning(" No metadata to copy")
 
@@ -259,7 +264,8 @@ def copy_l8_metadata(untar_dir, cog_dir):
 def find_l8_datetime(scene_dir):
     try:
         meta = glob.glob(f"{scene_dir}*.xml")[0]
-        m = ET.parse(meta).getroot().findall('{http://espa.cr.usgs.gov/v2}global_metadata')[0]  #####
+        m = ET.parse(meta).getroot().findall(
+            '{http://espa.cr.usgs.gov/v2}global_metadata')[0]
         d = m.find('{http://espa.cr.usgs.gov/v2}acquisition_date').text
         t = m.find('{http://espa.cr.usgs.gov/v2}scene_center_time').text
         return str(datetime.strptime(f"{d}{t[:8]}", '%Y-%m-%d%H:%M:%S'))
@@ -297,7 +303,8 @@ def yaml_prep_landsat(scene_dir):
     logging.info(images)
 
     # trusting bands coaligned, use one to generate spatial bounds for all
-    projection, extent = get_geometry(os.path.join(str(scene_dir), images['blue']['path']))
+    projection, extent = get_geometry(
+        os.path.join(str(scene_dir), images['blue']['path']))
 
     # parse esa l2a prod metadata file for reference
     scene_genesis = glob.glob(scene_dir + '*.xml')[0]
@@ -355,16 +362,17 @@ def yaml_prep_landsat(scene_dir):
     }
 
 
-def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/default',
-              inter_dir='/tmp/data/intermediate/', prodlevel='L2A', item = ""):
+def prepareLS(in_scene, s3_bucket='', s3_dir='', prodlevel="", item=""):
     root = setup_logging()
-
+    inter_dir = '/tmp/data/intermediate/'
     ls_url = in_scene
-    downloaded_file_path, filenames = download_scene(ls_url, inter_dir + 'download/')
+    downloaded_file_path, filenames = download_scene(
+        ls_url, inter_dir + 'download/')
     logging.info(f"Downloaded {filenames}")
-    filenames = [f for f in filenames if f.endswith(('.tif', '.tiff', '.TIF', '.TIFF'))]
+    filenames = [f for f in filenames if f.endswith(
+        ('.tif', '.tiff', '.TIF', '.TIFF'))]
     logging.info(f"Filtered {filenames}")
-    
+
     first_file = filenames[0]
     tokens = first_file.split('_')
     scene_name = '_'.join(tokens[:4])
@@ -376,7 +384,8 @@ def prepareLS(in_scene, s3_bucket='cs-odc-data', s3_dir='common_sensing/fiji/def
     cog_dir = f"{inter_dir}{scene_name}/"
     os.makedirs(cog_dir, exist_ok=True)
 
-    logging.info(f"scene: {scene_name}\nuntar: {untar_dir}\ncog_dir: {cog_dir}")
+    logging.info(
+        f"scene: {scene_name}\nuntar: {untar_dir}\ncog_dir: {cog_dir}")
     root.info(f"{scene_name} Starting")
 
     try:
