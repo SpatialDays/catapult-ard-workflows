@@ -429,13 +429,10 @@ def prepareLS(in_scene, s3_bucket='', s3_dir='', prodlevel="", item=""):
         except Exception as e:
             root.exception(f"{scene_name} Upload to S3 Failed")
             raise Exception('S3  upload error', e)
-
-        clean_up(inter_dir)
-
     except Exception as e:
         logging.error(f"Could not process {scene_name}, {e}")
+    finally:
         clean_up(inter_dir)
-
 
 if __name__ == '__main__':
     prepareLS("https://edclpdsftp.cr.usgs.gov/orders/espa-Sarah.Cheesbrough@sa.catapult.org.uk-12022019-042034-386/LT040750721993010401T1-SC20191202114123.tar.gz")
