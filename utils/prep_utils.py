@@ -79,13 +79,6 @@ def clean_up(work_dir: str) -> None:
     # remove all contents in the work_dir
     if os.path.exists(work_dir):
         shutil.rmtree(work_dir)
-        
-
-        # Delete all subdirectories in the given directory
-        for subdirname in os.listdir(work_dir):
-            subdirpath = os.path.join(work_dir, subdirname)
-            if os.path.isdir(subdirpath):
-                clean_up(subdirpath)  # Recursively clean up the subdirectory
 
     # # Check if the directory exists
     # if os.path.exists(work_dir):
