@@ -325,7 +325,7 @@ def s3_create_client(s3_bucket):
         secret,
     )
 
-    endpoint_url = os.getenv("AWS_ENDPOINT_URL")
+    endpoint_url = os.getenv("S3_ENDPOINT")
 
     if endpoint_url is not None:
         logging.debug('Endpoint URL: {}'.format(endpoint_url))
