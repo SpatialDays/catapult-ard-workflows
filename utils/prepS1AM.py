@@ -9,7 +9,6 @@ from utils.prep_utils import *
 from utils.s1am.raw2ard import Raw2Ard
 
 
-
 root = setup_logging()
 
 def find_s1_uuid(s1_filename):
@@ -204,15 +203,16 @@ def yaml_prep_s1(scene_dir):
 
 def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_sensing/sentinel_1/', inter_dir='/tmp/data/intermediate/'):
     """
-    Prepare IN_SCENE of Sentinel-1 satellite data into OUT_DIR for ODC indexing. 
+    Prepare a Sentinel-1 scene (L1C or L2A) for indexing in ODC by converting it to COGs.
 
-    :param in_scene: input Sentinel-1 scene name (either L1C or L2A) i.e. "S2A_MSIL1C_20180820T223011_N0206_R072_T60KWE_20180821T013410.SAFE"
-    :param out_dir: output directory to drop COGs into.
-    :param --inter: optional intermediary directory to be used for processing.
-    :param --source: Api source to be used for downloading scenes. Defaults to gcloud. Options inc. 'gcloud', 'esahub', 'sedas' COMING SOON
+    :param in_scene: the name of the input Sentinel-1 scene, e.g. "S1A_IW_GRDH_1SDV_20211004T165352_20211004T165417_039025_049FA6_E5F6"
+    :param chunks: the number of chunks to use when creating COGs (default is 24)
+    :param s3_bucket: the S3 bucket where the scene is located (default is 'public-eo-data')
+    :param s3_dir: the directory path within the S3 bucket where the scene is located (default is 'common_sensing/sentinel_1/')
+    :param inter_dir: an optional intermediate directory to be used for processing (default is '/tmp/data/intermediate/')
     :return: None
     """
-    
+
     tmp_inter_dir = inter_dir
 
     if not in_scene.endswith('.SAFE'):
