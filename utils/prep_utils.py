@@ -25,6 +25,13 @@ from rasterio.shutil import copy
 import numpy as np
 import gc
 
+class DownloadError(Exception):
+    """Exception raised when a download fails."""
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
 
 def to_cog(input_file, output_file, nodata=0):
     if os.path.exists(input_file):

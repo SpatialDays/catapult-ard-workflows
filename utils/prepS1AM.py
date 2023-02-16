@@ -52,8 +52,12 @@ def download_extract_s1_esa(scene_uuid, down_dir, original_scene_dir):
             copernicus_username = os.getenv("COPERNICUS_USERNAME")
             copernicus_pwd = os.getenv("COPERNICUS_PWD")
             logging.debug(f"ESA username: {copernicus_username}")
-            esa_api = SentinelAPI(copernicus_username, copernicus_pwd)
-            esa_api.download(scene_uuid, down_dir, checksum=True)
+
+            try:
+                esa_api = SentinelAPI(copernicus_username, copernicus_pwd)
+                esa_api.download(scene_uuid, down_dir, checksum=True)
+            except Exception as e:
+                raise DownloadError(f"Error downloading {scene_uuid} from ESA hub: {e}")
 
     else:
         logging.warning('ESA scene already extracted: {}'.format(original_scene_dir))
@@ -198,9 +202,6 @@ def yaml_prep_s1(scene_dir):
     }
 
 
-# prepareS1AM('S1A_IW_GRDH_1SDV_20191001T064008_20191001T064044_029261_035324_C74C',
-#             s3_dir='fiji/Sentinel_1_dockertest/', inter_dir='../S1_ARD/')
-
 def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_sensing/sentinel_1/', inter_dir='/tmp/data/intermediate/'):
     """
     Prepare a Sentinel-1 scene (L1C or L2A) for indexing in ODC by converting it to COGs.
@@ -224,7 +225,6 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
     cog_dir = os.path.join(inter_dir, scene_name)
     os.makedirs(cog_dir, exist_ok=True)
 
-    down_dir = inter_dir + in_scene + '/'
     down_zip = inter_dir + in_scene.replace('.SAFE','.zip')
     am_dir = down_zip.replace('.zip', 'Orb_Cal_Deb_ML_TF_TC_dB/')
 
@@ -236,12 +236,14 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
         try:
             s1id = find_s1_uuid(in_scene)
             logging.debug(s1id)
-            root.info(f"{in_scene} {scene_name} AVAILABLE via ESA")
+            root.info(f"{in_scene} {scene_name}: Available for download from ESA")
             # download_extract_s1_esa(s1id, inter_dir, down_dir)
-            root.info(f"{in_scene} {scene_name} DOWNLOADED via ESA")
+            root.info(f"{in_scene} {scene_name}: Downloaded from ESA")
         except Exception as e:
-            root.exception(f"{in_scene} {scene_name} UNAVAILABLE via ESA too")
-            raise Exception('Download Error ESA', e)
+            root.exception(f"{in_scene} {scene_name}: Failed to download from ESA")
+            # If there's an error, raise a more specific exception
+            raise DownloadError(f"Failed to download {in_scene} from ESA") from e
+
 
         # Download external DEMs
         ext_dem_path_list = download_external_dems(in_scene, scene_name, tmp_inter_dir, s3_bucket, root)
