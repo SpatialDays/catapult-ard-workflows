@@ -217,7 +217,7 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
     tmp_inter_dir = inter_dir
 
     if not in_scene.endswith('.SAFE'):
-        in_scene = in_scene + '.SAFE'
+        in_scene += '.SAFE'
 
     scene_name = in_scene[:32]
     inter_dir = f'{inter_dir}{scene_name}_tmp/'
@@ -241,7 +241,6 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
             root.info(f"{in_scene} {scene_name}: Downloaded from ESA")
         except Exception as e:
             root.exception(f"{in_scene} {scene_name}: Failed to download from ESA")
-            # If there's an error, raise a more specific exception
             raise DownloadError(f"Failed to download {in_scene} from ESA") from e
 
 
@@ -250,43 +249,43 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
 
         # Process AM
         try:
-            root.info(f"{in_scene} {scene_name} Starting AM SNAP processing")        
-            # Do AM Processing
+            root.info(f"{in_scene} {scene_name} Starting AM SNAP processing")
             obj = Raw2Ard( chunks=chunks, gpt='/opt/snap/bin/gpt' )
             obj.process(down_zip, am_dir, ext_dem_path_list[0], ext_dem_path_list[1])
         except Exception as e:
             root.exception(e)
-            root.exception(f"Processing failed")
 
-
-        # CONVERT TO COGS TO TEMP COG DIRECTORY**
+        # Convert scene to COGs in a temporary directory
         try:
-            root.info(f"{in_scene} {scene_name} Converting COGs")
+            root.info(f"Converting {in_scene} to COGs")
             conv_s1scene_cogs(inter_dir, cog_dir, scene_name)
-            root.info(f"{in_scene} {scene_name} COGGED")
+            root.info(f"Finished converting {in_scene} to COGs")
         except Exception as e:
-            root.exception(f"{in_scene} {scene_name} COG conversion FAILED")
-            raise Exception('COG Error', e)
+            root.exception(f"Failed to convert {in_scene} to COGs")
+            raise Exception(f"COG conversion error: {e}")
 
 
-        # GENERATE YAML WITHIN TEMP COG DIRECTORY**
+        # Create YAML metadata for the COGs
         try:
-            root.info(f"{in_scene} {scene_name} Creating dataset YAML")
-            create_yaml(cog_dir, yaml_prep_s1(cog_dir))
-            root.info(f"{in_scene} {scene_name} Created original METADATA")
+            root.info(f"Creating dataset YAML for {in_scene}")
+            metadata = yaml_prep_s1(cog_dir)
+            create_yaml(cog_dir, metadata)
+            root.info(f"Finished creating dataset YAML for {in_scene}")
         except Exception as e:
-            root.exception(f"{in_scene} {scene_name} Dataset YAML not created")
-            raise Exception('YAML creation error', e)
+            root.exception(f"Failed to create dataset YAML for {in_scene}")
+            raise Exception(f"YAML creation error: {e}")
 
 
-        # MOVE COG DIRECTORY TO OUTPUT DIRECTORY
+        # Upload COGs to S3 bucket
         try:
-            root.info(f"{in_scene} {scene_name} Uploading to S3 Bucket")
-            s3_upload_cogs(glob.glob(os.path.join(cog_dir, '*')), s3_bucket, s3_dir)
-            root.info(f"{in_scene} {scene_name} Uploaded to S3 Bucket")
+            root.info(f"Uploading {in_scene} COGs to S3 bucket")
+            cogs_to_upload = glob.glob(os.path.join(cog_dir, '*'))
+            s3_upload_cogs(cogs_to_upload, s3_bucket, s3_dir)
+            root.info(f"Finished uploading {in_scene} COGs to S3 bucket")
         except Exception as e:
-            root.exception(f"{in_scene} {scene_name} Upload to S3 Failed")
-            raise Exception('S3  upload error', e)
+            root.exception(f"Failed to upload {in_scene} COGs to S3 bucket")
+            raise Exception(f"S3 upload error: {e}")
+
 
         # DELETE ANYTHING WITHIN THE TEMP DIRECTORY
         clean_up(inter_dir)
