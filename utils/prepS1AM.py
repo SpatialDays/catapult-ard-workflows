@@ -8,8 +8,6 @@ from utils.prep_utils import *
 
 from utils.s1am.raw2ard import Raw2Ard
 
-cookie_jar_path = os.path.join( os.path.expanduser('~'), ".bulk_download_cookiejar.txt")
-cookie_jar = MozillaCookieJar()
 
 
 root = setup_logging()
@@ -164,7 +162,6 @@ def yaml_prep_s1(scene_dir):
             'path': prod_path
         } for prod_path in prod_paths
     }
-    logging.debug(f'Images:: {images}')
 
     # trusting bands coaligned, use one to generate spatial bounds for all
     try:
@@ -246,30 +243,15 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
             root.exception(f"{in_scene} {scene_name} UNAVAILABLE via ESA too")
             raise Exception('Download Error ESA', e)
 
-        # Download other things we need
-        try:
-            root.info(f"{in_scene} {scene_name} DOWNLOADING External DEMs")
-            # Download external DEMs
-            ext_dem_path_E = "common_sensing/ancillary_products/SRTM1Sec/SRTM30_Fiji_E.tif"
-            ext_dem_path_W = "common_sensing/ancillary_products/SRTM1Sec/SRTM30_Fiji_W.tif"
-            ext_dem_E = f'{tmp_inter_dir}SRTM30_Fiji_E.tif'
-            ext_dem_W = f'{tmp_inter_dir}SRTM30_Fiji_W.tif'
-            root.info(f"Checking if we have {ext_dem_E} and {ext_dem_W}")
-            if not os.path.exists(ext_dem_E):
-                logging.debug(f"Downloading {ext_dem_path_E} to {ext_dem_E}")
-                s3_download(s3_bucket, ext_dem_path_E, ext_dem_E)
-                s3_download(s3_bucket, ext_dem_path_W, ext_dem_W)
-            root.info(f"{in_scene} {scene_name} DOWNLOADED E+W DEMs")
-        except Exception as e:
-            root.exception(e)
-            root.exception(f"{ext_dem_path_E} or {ext_dem_path_W} UNAVAILABLE")
+        # Download external DEMs
+        ext_dem_path_list = download_external_dems(in_scene, scene_name, tmp_inter_dir, s3_bucket, root)
 
         # Process AM
         try:
             root.info(f"{in_scene} {scene_name} Starting AM SNAP processing")        
             # Do AM Processing
             obj = Raw2Ard( chunks=chunks, gpt='/opt/snap/bin/gpt' )
-            obj.process(down_zip, am_dir, ext_dem_E, ext_dem_W)
+            obj.process(down_zip, am_dir, ext_dem_path_list[0], ext_dem_path_list[1])
         except Exception as e:
             root.exception(e)
             root.exception(f"Processing failed")
@@ -293,6 +275,7 @@ def prepareS1AM(in_scene, chunks=24, s3_bucket='public-eo-data', s3_dir='common_
         except Exception as e:
             root.exception(f"{in_scene} {scene_name} Dataset YAML not created")
             raise Exception('YAML creation error', e)
+
 
         # MOVE COG DIRECTORY TO OUTPUT DIRECTORY
         try:
